@@ -25,6 +25,8 @@ var EventHandler = {
             page = this;
             ListEventHandler.init(this, EquipmentTenderApplicationUrl);
             let table = page.findUI('CPListTable');
+
+            //页面渲染 界面设计器 下拉框record.tenderMethod返回的是界面设计器键值
             table.children.forEach(function (item) {
                 switch (item.key) {
                     case 'tenderMethod':
@@ -39,6 +41,19 @@ var EventHandler = {
                         };
                 }
             });
+            //页面渲染 枚举档案 record.tenderMethod返回的是档案编码
+            table.children.forEach(function (item) {
+                switch (item.key) {
+                    case 'rentalMethod':
+                        item.render = function (text, record, index) {
+                            if (record.rentalMethod == "Method-02") {
+                                return "外部租赁";
+                            } else if (record.rentalMethod == "Method-01") {
+                                return "内部租赁";
+                            }
+                        };
+                }
+            });
         }
         , onViewDidMount: function (options) {
 			ListEventHandler.initData(this);
@@ -49,6 +64,22 @@ var EventHandler = {
         , onViewDidUpdate: function (options) {
 
         }
+    }
+}
+
+//自定义页面渲染方法，解析招标方式为对应汉字
+function tenderMethodHanhua(a) {
+    if (a == "openTender") {
+        return "公开招标";
+    }
+    else if (a == "InvitationTender") {
+        return "邀请招标";
+    }
+    else if (a == "negotiation") {
+        return "竞争性谈判"
+    }
+    else {
+        return null;
     }
 }
 

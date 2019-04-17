@@ -15,7 +15,6 @@ let page=null;
 //页面初始化
 var EventHandler = {
 
-
     //中标单位选择 - 点击添加
     "bidderAdd": {
 
@@ -25,11 +24,21 @@ var EventHandler = {
 
         }
     },
+    //减行时调用求和方法
+    "deleteRow1": {
+        onClick: function (obj) {
+            CardEventHandler.delRow(page, 'listTable');
+            calculateTotal() ;
+
+        }
+    },
+
+
     //中标单位选择 - 减行按钮
     "deleteRow2": {
         onClick: function (obj) {
             CardEventHandler.delRow(page, 'companyTable');
-            calculateTotal;
+
         }
     },
     "tenderName": {
@@ -41,18 +50,19 @@ var EventHandler = {
             this.refresh();
         },
         "onChange": function (value, column, data) {
-
+            //当tenderName这个键值发生变化onChange时，把参照信息（ID CODE NAME）带入，其他字段可以通过映射配置
             page.findUI('baseForm').api.setFieldsValue({  //表单赋值
                'tenderName': {id:data.id, name: data.tenantId, code: data.billCode},
-                'tenderMethod':data.tenderMethod,
+                'tenderMethod':tenderMethodHanhua(data.tenderMethod),
+
 
             })
+            //定义一个求和，当tenderName这个键值发生变化onChange时，把子表信息带入表单子表设备清单中
             var total=null;
             data.editTable.forEach(function (item) {
                 item.rowState = "add";
                 total+=item.number*item.unitPrice;
-                //item.id = null;
-                //item.pid = null;
+
             })
 
             page.findUI('listTable').dataSource= data.editTable;
@@ -65,9 +75,11 @@ var EventHandler = {
         onViewWillMount: function (options) {
             page = this;// 初始化页面对象
             CardEventHandler.pageLoading(this);
+
         }
         , onViewDidMount: function (options) {
-            CardEventHandler.init(this, EquipmentTenderResultUrl);
+            CardEventHandler.init(this, EquipmentTenderResultUrl);//加载自带组件
+            page.findUI('baseForm').api.setFieldsValue({ 'tenderData': new Date()});//获取当前时间
         }
         , onViewWillUpdate: function (options) {
 
@@ -78,13 +90,30 @@ var EventHandler = {
     }
 };
 
-//减行时求和方法
+//自定义页面渲染方法，解析招标方式为对应汉字
+function tenderMethodHanhua(a) {
+    if (a == "openTender") {
+        return "公开招标";
+    }
+    else if (a == "InvitationTender") {
+        return "邀请招标";
+    }
+    else if (a == "negotiation") {
+        return "竞争性谈判"
+    }
+    else {
+        return null;
+    }
+}
+
+//减行时求和方法//
 function calculateTotal() {
-    var dataSource = page.findUI('listTable').api.getDataSource();
+    var listTable = page.findUI('listTable');
+    var dataSource = listTable.api.getDataSource();
     var total = 0;
     dataSource.forEach(function (item) {
-        total += item.number * item.unitPrice;
-    })
+        total+=item.number*item.unitPrice;
+    });
     page.findUI('baseForm').api.setFieldsValue({'totalMoney': total == 0 ? '' : total});
 }
 

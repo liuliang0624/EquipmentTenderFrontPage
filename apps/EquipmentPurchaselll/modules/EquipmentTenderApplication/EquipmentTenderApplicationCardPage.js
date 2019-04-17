@@ -56,4 +56,5 @@ var EquipmentTenderApplicationCardPage = YYClass.create({
     }
 });
 
+
 module.exports = EquipmentTenderApplicationCardPage;

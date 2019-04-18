@@ -25,7 +25,6 @@ var EventHandler = {
             page = this;
             ListEventHandler.init(this, EquipmentTenderApplicationUrl);
             let table = page.findUI('CPListTable');
-
             //页面渲染 界面设计器 下拉框record.tenderMethod返回的是界面设计器键值
             table.children.forEach(function (item) {
                 switch (item.key) {

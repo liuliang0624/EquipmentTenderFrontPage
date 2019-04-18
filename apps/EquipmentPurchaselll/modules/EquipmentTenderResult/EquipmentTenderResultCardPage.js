@@ -71,6 +71,8 @@ var EventHandler = {
         }
     },
 
+
+
     "cardPage": {
         onViewWillMount: function (options) {
             page = this;// 初始化页面对象
